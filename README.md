@@ -179,6 +179,4 @@ streamgen/
 
 I used OpenAI ChatGPT as a support tool while working on this project. It helped me think through the project structure, troubleshoot setup issues, review parts of the recommendation flow, and improve the documentation and interface wording. I ran the commands on my own machine and worked through the setup errors during development. I still need to verify the complete application flow and measure the performance targets before claiming that those checks pass.
 
-I will update this section if I use any other AI tools and make sure the final description matches the assistance I actually used and the tests I personally completed.
-
 
