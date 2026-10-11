@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: streamgen
+      POSTGRES_USER: streamgen
+      POSTGRES_PASSWORD: streamgen_dev_password
+    ports: ["5432:5432"]
+    volumes: ["streamgen-postgres:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U streamgen -d streamgen"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  ml-service:
+    build:
+      context: .
+      dockerfile: ml-service/Dockerfile
+    ports: ["8001:8001"]
+  backend:
+    image: node:20-alpine
+    working_dir: /app
+    volumes: ["./backend:/app"]
+    command: sh -c "npm install && npm start"
+    environment:
+      PORT: 4000
+      ML_SERVICE_URL: http://ml-service:8001
+      FRONTEND_ORIGIN: http://localhost:5173
+      DATABASE_URL: postgres://streamgen:streamgen_dev_password@postgres:5432/streamgen
+    ports: ["4000:4000"]
+    depends_on:
+      ml-service:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+volumes:
+  streamgen-postgres:

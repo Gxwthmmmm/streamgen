@@ -1,0 +1,126 @@
+user_id,item_id,title,genre,rating
+u1,m1,The Last Signal,Sci-Fi,5
+u1,m2,Orbit Nine,Sci-Fi,4
+u1,m3,Deep Blue,Thriller,4
+u1,m4,Quiet Earth,Drama,3
+u2,m1,The Last Signal,Sci-Fi,4
+u2,m2,Orbit Nine,Sci-Fi,5
+u2,m5,Red Meridian,Action,4
+u2,m6,Glass House,Thriller,4
+u3,m3,Deep Blue,Thriller,5
+u3,m6,Glass House,Thriller,4
+u3,m7,Northbound,Drama,4
+u3,m8,Paper Moons,Romance,3
+u4,m1,The Last Signal,Sci-Fi,5
+u4,m9,Neon Harbor,Sci-Fi,4
+u4,m10,Zero Hour,Action,5
+u4,m5,Red Meridian,Action,4
+u5,m2,Orbit Nine,Sci-Fi,4
+u5,m9,Neon Harbor,Sci-Fi,5
+u5,m11,Wild Circuit,Action,4
+u5,m12,The Archive,Mystery,4
+u6,m3,Deep Blue,Thriller,4
+u6,m6,Glass House,Thriller,5
+u6,m12,The Archive,Mystery,4
+u6,m13,Hidden Room,Mystery,5
+u7,m4,Quiet Earth,Drama,5
+u7,m7,Northbound,Drama,4
+u7,m14,Sunday Letters,Romance,5
+u7,m8,Paper Moons,Romance,4
+u8,m10,Zero Hour,Action,4
+u8,m5,Red Meridian,Action,5
+u8,m11,Wild Circuit,Action,4
+u8,m15,Iron Coast,Adventure,4
+u9,m13,Hidden Room,Mystery,4
+u9,m12,The Archive,Mystery,5
+u9,m16,Last Witness,Thriller,4
+u9,m3,Deep Blue,Thriller,4
+u10,m14,Sunday Letters,Romance,4
+u10,m8,Paper Moons,Romance,5
+u10,m17,City of Stars,Drama,4
+u10,m4,Quiet Earth,Drama,4
+u11,m2,Orbit Nine,Sci-Fi,4
+u11,m15,Iron Coast,Adventure,5
+u11,m23,Green Horizon,Adventure,3
+u12,m18,Signal Lost,Sci-Fi,4
+u12,m1,The Last Signal,Sci-Fi,5
+u12,m5,Red Meridian,Action,3
+u12,m10,Zero Hour,Action,4
+u13,m16,Last Witness,Thriller,4
+u13,m22,Open Water,Thriller,5
+u13,m6,Glass House,Thriller,3
+u13,m13,Hidden Room,Mystery,4
+u13,m20,Midnight Index,Mystery,5
+u14,m4,Quiet Earth,Drama,5
+u14,m8,Paper Moons,Romance,3
+u14,m17,City of Stars,Drama,4
+u14,m24,Small Hours,Drama,5
+u14,m7,Northbound,Drama,3
+u15,m2,Orbit Nine,Sci-Fi,5
+u15,m15,Iron Coast,Adventure,3
+u15,m23,Green Horizon,Adventure,4
+u16,m5,Red Meridian,Action,5
+u16,m10,Zero Hour,Action,3
+u16,m18,Signal Lost,Sci-Fi,4
+u16,m1,The Last Signal,Sci-Fi,5
+u17,m12,The Archive,Mystery,5
+u17,m16,Last Witness,Thriller,3
+u17,m22,Open Water,Thriller,4
+u17,m6,Glass House,Thriller,5
+u17,m13,Hidden Room,Mystery,3
+u18,m21,After the Rain,Romance,3
+u18,m4,Quiet Earth,Drama,4
+u18,m8,Paper Moons,Romance,5
+u18,m17,City of Stars,Drama,3
+u18,m24,Small Hours,Drama,4
+u19,m2,Orbit Nine,Sci-Fi,3
+u19,m15,Iron Coast,Adventure,4
+u19,m23,Green Horizon,Adventure,5
+u20,m18,Signal Lost,Sci-Fi,3
+u20,m1,The Last Signal,Sci-Fi,4
+u20,m5,Red Meridian,Action,5
+u20,m10,Zero Hour,Action,3
+u21,m3,Deep Blue,Thriller,3
+u21,m12,The Archive,Mystery,4
+u21,m16,Last Witness,Thriller,5
+u21,m22,Open Water,Thriller,3
+u21,m6,Glass House,Thriller,4
+u22,m14,Sunday Letters,Romance,4
+u22,m21,After the Rain,Romance,5
+u22,m4,Quiet Earth,Drama,3
+u22,m8,Paper Moons,Romance,4
+u22,m17,City of Stars,Drama,5
+u23,m2,Orbit Nine,Sci-Fi,4
+u23,m15,Iron Coast,Adventure,5
+u23,m23,Green Horizon,Adventure,3
+u24,m5,Red Meridian,Action,4
+u24,m10,Zero Hour,Action,5
+u24,m18,Signal Lost,Sci-Fi,3
+u24,m1,The Last Signal,Sci-Fi,4
+u25,m20,Midnight Index,Mystery,4
+u25,m3,Deep Blue,Thriller,5
+u25,m12,The Archive,Mystery,3
+u25,m16,Last Witness,Thriller,4
+u25,m22,Open Water,Thriller,5
+u26,m7,Northbound,Drama,5
+u26,m14,Sunday Letters,Romance,3
+u26,m21,After the Rain,Romance,4
+u26,m4,Quiet Earth,Drama,5
+u26,m8,Paper Moons,Romance,3
+u27,m2,Orbit Nine,Sci-Fi,5
+u27,m15,Iron Coast,Adventure,3
+u27,m23,Green Horizon,Adventure,4
+u28,m18,Signal Lost,Sci-Fi,5
+u28,m1,The Last Signal,Sci-Fi,3
+u28,m5,Red Meridian,Action,4
+u28,m10,Zero Hour,Action,5
+u29,m13,Hidden Room,Mystery,5
+u29,m20,Midnight Index,Mystery,3
+u29,m3,Deep Blue,Thriller,4
+u29,m12,The Archive,Mystery,5
+u29,m16,Last Witness,Thriller,3
+u30,m24,Small Hours,Drama,3
+u30,m7,Northbound,Drama,4
+u30,m14,Sunday Letters,Romance,5
+u30,m21,After the Rain,Romance,3
+u30,m4,Quiet Earth,Drama,4
