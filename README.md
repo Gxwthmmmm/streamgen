@@ -1,150 +1,184 @@
-# StreamGen — personalized streaming discovery
+# StreamGen
 
-StreamGen is a full-stack demo that recommends fictional movies and shows using **item-item collaborative filtering**. Users select titles from their viewing history, set 1–5 ratings, receive at least five unseen recommendations, and rate recommendations to influence later rankings.
+StreamGen is a small movie and TV recommendation app I built to explore how viewing history can be used to suggest what someone might want to watch next. A user can select titles they have watched, rate them, and get a list of recommendations they have not seen yet.
+
+The project uses a fictional catalogue and sample viewing data, so it can be run and tested without connecting to a real streaming service.
 
 ## Features
 
-- React + TypeScript responsive interface with viewing-history editor and recommendation cards.
-- Express API gateway with input validation, rate limiting, security headers, and a short ML-service timeout.
-- Python FastAPI recommendation service using pandas and scikit-learn cosine similarity.
-- PostgreSQL persistence for feedback when run with Docker Compose; local manual mode can run without PostgreSQL.
-- Preprocessing removes duplicate user/item events, invalid ratings, missing fields, blank users, and events for items not in the catalogue.
-- 125 sample viewing-history interactions and 24 fictional catalogue titles.
-- Feedback overlay updates a user's ratings and is included in the next recommendation request.
-- Cold-start/popularity fallback, bounded request size, and clear API errors.
+- Select titles and add them to a viewing history with ratings from 1 to 5.
+- Generate recommendations based on patterns in user ratings.
+- Rate recommendations and request an updated list.
+- Clean the sample viewing history before using it.
+- Check service status through health endpoints.
 
-## Architecture
+The sample dataset contains 125 viewing-history interactions across 24 catalogue titles. The app can return only titles that are present in the catalogue and have not already been watched by the user, so the number of results depends on the remaining titles.
+
+## Tech stack
+
+- **Frontend:** React, TypeScript, and Vite
+- **Backend API:** Node.js and Express
+- **Recommendation service:** Python, FastAPI, pandas, and scikit-learn
+- **Data:** CSV files for the catalogue and viewing history
+- **Feedback storage:** PostgreSQL in the Docker Compose setup
+
+## How it works
 
 ```mermaid
 flowchart TD
-    U[Viewer] --> UI[React + TypeScript UI]
-    UI -->|JSON over HTTP| API[Express API gateway]
-    API -->|validated request| ML[FastAPI recommendation service]
-    DATA[(CSV viewing history + catalogue)] --> PRE[Preprocessing: dedupe, validate, filter]
-    PRE --> CF[User-item matrix + item-item cosine similarity]
-    ML --> CF
-    FB[User ratings / feedback overlay] --> CF
-    CF --> ML
-    ML -->|ranked unseen titles| API
-    API --> UI
+    A[User] --> B[React + TypeScript]
+    B --> C[Express API]
+    C --> D[FastAPI recommendation service]
+    E[Viewing history and catalogue CSVs] --> F[Clean and validate data]
+    F --> G[User-item rating matrix]
+    G --> H[Item-item cosine similarity]
+    D --> H
+    H --> D
+    D --> C
+    C --> B
+    B --> I[User feedback]
+    I --> C
+    C --> D
 ```
 
-### Data flow
+At a high level, the frontend sends a user's viewing history to the Express API. The API forwards the request to the Python service, which prepares the data and calculates recommendations using item-item collaborative filtering and cosine similarity. The API returns the ranked results to the frontend. Feedback is included in later recommendation requests so it can affect subsequent suggestions.
 
-1. On startup, the ML service cleans `data/viewing_history.csv` and loads `data/catalog.csv`.
-2. The viewer selects catalogue titles and assigns ratings in the UI.
-3. The frontend posts `{ user_id, history, limit }` to the Express API, which validates basic shape and forwards the request to FastAPI.
-4. The ML service builds a user-item matrix, computes item-item cosine similarities, scores unseen titles from the user's ratings, and applies a small popularity prior for sparse data.
-5. The UI displays up to eight results (at least five when the catalogue has enough unseen titles).
-6. A thumbs-up or thumbs-down submits a 5 or 1 rating. The feedback overlay is merged into the matrix and user's profile for subsequent recommendations.
+Before calculating recommendations, the data-preparation step removes duplicate interactions and records with missing or invalid values, including ratings outside the accepted range and titles that are not in the catalogue.
 
 ## Run locally
 
-Requirements: Node.js 20+, Python 3.11+, npm, and internet access for first-time package installation. In manual local mode, feedback is held in the ML process memory. Docker Compose includes PostgreSQL and persists feedback ratings across backend restarts.
+### Requirements
 
-### 1. Start the ML service
+- Node.js and npm
+- Python 3.11 or newer
+- Git (recommended)
+- Docker Desktop only if you want to use the PostgreSQL-backed Docker setup
 
-From the repository root:
+### 1. Start the recommendation service
 
-```bash
+From the project root, open a terminal and run:
+
+```powershell
 cd ml-service
 python -m venv .venv
-# Windows PowerShell: .venv\Scripts\Activate.ps1
-# macOS/Linux: source .venv/bin/activate
+.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8001
 ```
 
-### 2. Start the Express API
-
-In a second terminal from the repository root:
+On macOS or Linux, activate the environment with:
 
 ```bash
+source .venv/bin/activate
+```
+
+### 2. Start the Express API
+
+Open a second terminal from the project root:
+
+```powershell
 cd backend
 npm install
 npm run dev
 ```
 
-### 3. Start the React frontend
+### 3. Start the frontend
 
-In a third terminal:
+Open a third terminal from the project root:
 
-```bash
+```powershell
 cd frontend
 npm install
 npm run dev
 ```
 
-Open `http://localhost:5173`. API health checks: `http://localhost:4000/api/health` and `http://localhost:8001/health`.
+Open the local URL printed by Vite. It is usually `http://localhost:5173`.
 
-### Optional Docker run
+### Optional: run backend services with Docker Compose
 
-From the repository root, run `docker compose up --build`. This starts PostgreSQL, the backend, and ML service. For the frontend, run the local frontend steps above in a separate terminal. (The frontend development server calls the API at `http://localhost:4000/api` by default.)
+If Docker Desktop is installed and running, use the project root:
 
-## API
+```bash
+docker compose up --build
+```
 
-- `GET /api/health` — API and ML service status.
-- `GET /api/catalog` — list of available titles.
-- `POST /api/recommend` — body: `{"user_id":"you","history":[{"item_id":"m1","rating":5}],"limit":8}`. `limit` is between 5 and 20; history supports up to 100 entries.
-- `POST /api/feedback` — body: `{"user_id":"you","item_id":"m10","rating":5}`. Ratings must be integers from 1 to 5.
+Start the frontend separately using step 3. If you do not have Docker installed, use the local setup above.
 
-FastAPI docs are available at `http://localhost:8001/docs`.
+## Useful URLs
 
-## Design choices and trade-offs
+- Frontend: `http://localhost:5173`
+- Express API health: `http://localhost:4000/api/health`
+- ML service health: `http://localhost:8001/health`
+- ML API documentation: `http://localhost:8001/docs`
 
-- **Item-item cosine similarity:** it is simple, interpretable, quick to compute for this small catalogue, and directly meets the collaborative-filtering requirement. A production system with a much larger catalogue would precompute similarities or use matrix factorization / approximate nearest neighbors.
-- **CSV + in-memory feedback for a portable demo:** no database setup is needed to run the submission. The trade-off is that feedback resets on restart and the sample dataset is not intended for production. The Docker Compose setup persists feedback in PostgreSQL; the ML service keeps a fast in-memory overlay for the current process. A production deployment should also persist viewing events, handle schema migrations, and share/rebuild the feedback overlay across ML replicas.
-- **Popularity fallback:** useful for sparse histories and cold-start cases, but less personalized than collaborative filtering. It is deliberately a small prior rather than the dominant score.
-- **Synthetic fictional catalogue:** avoids third-party media API dependencies and makes the demo deterministic; artwork is generated with CSS rather than copyrighted poster assets.
-- **Latency:** model computation is lightweight for this dataset and runs in-process; the API gateway times out after 2.5 seconds when calling the ML service. The under-3-second target should still be benchmarked in the actual target environment.
+## API endpoints
 
-## Validation checklist
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `GET` | `/api/health` | Checks API status. |
+| `GET` | `/api/catalog` | Returns catalogue titles. |
+| `POST` | `/api/recommend` | Requests recommendations for a viewing history. |
+| `POST` | `/api/feedback` | Submits a rating for a recommendation. |
 
-- [ ] Run `GET /health`; verify `clean_interactions` is at least 100.
-- [ ] Submit a history of one to three titles; confirm at least five unseen recommendations appear.
-- [ ] Rate a recommendation with thumbs-up/down, then refresh recommendations and compare ranking.
-- [ ] Submit an invalid item ID or rating and confirm a helpful error response.
-- [ ] Test 10 concurrent recommendation requests and record p95 latency before claiming the concurrency target.
+Example recommendation request:
 
-## Demo video plan (under 8 minutes)
+```json
+{
+  "user_id": "demo-user",
+  "history": [
+    { "item_id": "m1", "rating": 5 },
+    { "item_id": "m2", "rating": 4 }
+  ],
+  "limit": 8
+}
+```
 
-1. **0:00–0:40** — Introduce StreamGen and its goal.
-2. **0:40–1:40** — Show the architecture diagram and stack.
-3. **1:40–3:00** — Edit viewing history, change a rating, and request recommendations.
-4. **3:00–4:00** — Rate one recommendation and refresh to demonstrate feedback.
-5. **4:00–5:00** — Show `/health`, `/docs`, and the 125-row cleaned dataset.
-6. **5:00–6:30** — Explain collaborative filtering, cold-start fallback, and trade-offs.
-7. **6:30–7:30** — Walk through code structure and AI usage disclosure.
+Use item IDs that exist in the catalogue. The API validates the request, and the number of recommendations is limited by how many unseen titles remain.
 
-Keep the webcam on, share the actual running app and terminal/browser, and narrate in your own words. The generated source does not include a recorded video.
+## Design decisions and trade-offs
 
-## AI usage
+**Item-item collaborative filtering.** I used cosine similarity to compare rating patterns between titles. It is relatively simple to implement and explain, and it fits this small dataset. A larger service would need more evaluation and might benefit from precomputed similarities or a different recommendation approach.
 
-Disclose AI assistance accurately in your submission. Suggested starting point (edit to reflect your actual process):
+**CSV sample data.** CSV files make the sample easy to inspect and keep the project straightforward to set up. The trade-off is that the catalogue and viewing history are small and fictional, so they cannot demonstrate how well the system would perform with real users.
 
-> **AI tools used:** OpenAI ChatGPT was used to help scaffold the application structure, draft the collaborative-filtering implementation, write UI components and styling, and prepare initial README documentation. I reviewed and edited the generated code, checked the data cleaning and request-validation paths, and manually ran the application and requirement checklist before submission. Any claims about latency or concurrent users will be reported only after local testing. No AI-generated result is treated as a measured benchmark.
+**Separate ML service.** Keeping the recommendation code in Python means I can use pandas and scikit-learn without mixing it into the Express API. The downside is that two backend services need to be started and monitored.
 
-If you use other AI tools, add them here and describe which files or tasks they affected. Do not claim tests were passed unless you actually ran them.
+**New or sparse user histories.** When there is not much history to compare, collaborative filtering has less information to work with. The fallback recommendations help avoid returning an empty list, but they are less personalised.
 
-## Repository structure
+**Persistence.** PostgreSQL is included in the Docker Compose setup for feedback storage. In a local setup without the database, feedback may be kept only in memory and can be lost when the service restarts. This would need to be addressed before using the app as a persistent multi-user service.
+
+## Checks before submission
+
+I use the following checklist to validate the project. Only mark a check complete after running it yourself and confirming the result.
+
+- [ ] Start the services and confirm the health endpoints respond.
+- [ ] Confirm the cleaned dataset contains at least 100 valid interactions.
+- [ ] Submit a viewing history and confirm at least five unseen recommendations are returned when enough titles remain.
+- [ ] Rate a recommendation, request recommendations again, and check whether the results change.
+- [ ] Try empty history, unknown title IDs, and invalid ratings.
+- [ ] Measure recommendation response time and check whether it is under three seconds.
+- [ ] Test up to ten concurrent requests and record the observed response times.
+
+Performance targets are goals to test, not results claimed by this README.
+
+## Project structure
 
 ```text
 streamgen/
-├── backend/src/index.js          # Express API gateway + PostgreSQL feedback persistence
-├── frontend/src/App.tsx          # React UI and feedback flow
-├── frontend/src/styles.css       # Responsive visual design
-├── ml-service/app/main.py        # preprocessing + collaborative filtering
-├── data/catalog.csv              # fictional media catalogue
-├── data/viewing_history.csv      # sample interactions (125 rows)
+├── backend/src/index.js
+├── frontend/src/App.tsx
+├── frontend/src/styles.css
+├── ml-service/app/main.py
+├── data/catalog.csv
+├── data/viewing_history.csv
 ├── docker-compose.yml
 └── README.md
 ```
 
-## Before publishing
+## AI assistance
 
-- Create a public GitHub repository and push this folder.
-- Run the validation checklist and record actual results.
-- Replace the AI usage draft with a truthful account of tools and verification.
-- Record the narrated screen-share demo; keep it under 8 minutes and 200 MB.
-#   s t r e a m g e n  
- 
+I used OpenAI ChatGPT as a support tool while working on this project. It helped me think through the project structure, troubleshoot setup issues, review parts of the recommendation flow, and improve the documentation and interface wording. I ran the commands on my own machine and worked through the setup errors during development. I still need to verify the complete application flow and measure the performance targets before claiming that those checks pass.
+
+I will update this section if I use any other AI tools and make sure the final description matches the assistance I actually used and the tests I personally completed.
+
+
