@@ -146,3 +146,5 @@ streamgen/
 - Run the validation checklist and record actual results.
 - Replace the AI usage draft with a truthful account of tools and verification.
 - Record the narrated screen-share demo; keep it under 8 minutes and 200 MB.
+#   s t r e a m g e n  
+ 
